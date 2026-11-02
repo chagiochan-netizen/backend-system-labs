@@ -1,0 +1,12 @@
+# Thu vien co the cai lai bang npm
+node_modules/
+
+# Cau hinh va thong tin bi mat
+.env
+.env.*
+!.env.example
+
+# File sinh ra khi chay hoac build
+*.log
+coverage/
+dist/

@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "dotenv": "^18.0.8",
+    "express": "^5.2.1",
+    "pg": "^8.23.1"
+  },
+  "name": "chatgpt-tutor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "start:express": "node src/server-express.js",
+    "db:check": "node scripts/db-check.js",
+    "test": "node --test tests/login.test.js tests/username.test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module"
+}
