@@ -74,6 +74,20 @@ authRouter.get('/me', (req, res) => {
     return res.json({ name: user });
 })
 
+authRouter.post('/logout', (req, res) => {
+    const cookie = req.headers.cookie
+    if (!cookie) {
+        return res.status(401)
+            .send('Unauthorized session')
+    }
+
+    const sessionId = cookie.split('=')[1]
+    delete sessions[sessionId]
+
+    return res.status(204)
+        .end()
+})
+
 export { authRouter };
 
 

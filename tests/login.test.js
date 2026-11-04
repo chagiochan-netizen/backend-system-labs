@@ -162,6 +162,55 @@ test("John vẫn được nhận diện đúng sau khi David đăng nhập", asy
     assert.equal(user.name, "John");
 });
 
+test("Cookie cũ ko dùng được sau khi logout", async () => {
+    //Gọi POST /login với dữ liệu hợp lệ. Kiểm tra status 200 và giữ lại cookie như test hiện có.
+    const postRes = await fetch(`${baseURL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            name: 'Dylan',
+            age: 24
+        })
+    })
+
+    assert.equal(postRes.status, 200)
+
+    //Giữ lại cookie 
+    const cookiePost = postRes.headers.get("set-cookie");
+    assert.notEqual(cookiePost, null);
+    const sessionCookiePost = cookiePost.split(";")[0]
+
+    //Gọi GET /me với cookie đó. Kiểm tra 200 để chứng minh cookie dùng được trước khi đăng xuất.
+    const getRes = await fetch(`${baseURL}/me`, {
+        method: 'GET',
+        headers: {
+            "Cookie": sessionCookiePost
+        }
+    })
+
+    assert.equal(getRes.status, 200)
+
+    //Gọi POST /logout với cùng cookie. Kiểm tra 204, mã ta chọn cho đăng xuất thành công.
+    const postLogout = await fetch(`${baseURL}/logout`, {
+        method: 'POST',
+        headers: {
+            "Cookie": sessionCookiePost
+        }
+    })
+
+    assert.equal(postLogout.status, 204)
+
+    //Gọi lại GET /me bằng chính cookie đã lưu ở bước 1. Lần này phải nhận 401.
+    const getRes1 = await fetch(`${baseURL}/me`, {
+        method: 'GET',
+        headers: {
+            "Cookie": sessionCookiePost
+        }
+    })
+
+    assert.equal(getRes1.status, 401)
+})
+
 after(async () => {
     try {
         // 1. Nếu server tồn tại và đang mở:
