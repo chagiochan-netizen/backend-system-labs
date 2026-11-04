@@ -4,6 +4,24 @@ import { randomUUID } from 'node:crypto';
 const authRouter = express.Router();
 const sessions = {};
 
+function getSessionId(cookie) {
+    if (!cookie) {
+        return undefined;
+    }
+
+    for (const item of cookie.split(';')) {
+        const parts = item.trim().split('=');
+
+        // Bạn tự viết: nếu parts[0] là 'sessionId',
+        // hãy trả về giá trị ở parts[1].
+        if (parts[0] === 'sessionId') {
+            return parts[1];
+        }
+    }
+
+    return undefined;
+}
+
 // Đặt authRouter.post('/login', ...) ở đây.
 authRouter.post('/login', (req, res) => {
     const data = req.body;
@@ -64,7 +82,7 @@ authRouter.get('/me', (req, res) => {
         return res.status(401)
             .send('Unauthorized');
     }
-    const sessionId = cookie.split('=')[1]
+    const sessionId = getSessionId(cookie);
     const user = sessions[sessionId]
     if (!user) {
         return res.status(401)
@@ -81,8 +99,11 @@ authRouter.post('/logout', (req, res) => {
             .send('Unauthorized session')
     }
 
-    const sessionId = cookie.split('=')[1]
-    delete sessions[sessionId]
+    const sessionId = getSessionId(cookie);
+
+    if (sessionId) {
+        delete sessions[sessionId];
+    }
 
     return res.status(204)
         .end()
