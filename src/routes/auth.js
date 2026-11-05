@@ -75,22 +75,25 @@ authRouter.post('/login', (req, res) => {
 
 })
 // Đặt authRouter.get('/me', ...) ở đây.
-authRouter.get('/me', (req, res) => {
-    // Bạn chuyển logic /me từ server.js vào đây
-    const cookie = req.headers.cookie
+function requireSession(req, res, next) {
+    const cookie = req.headers.cookie;
     if (!cookie) {
-        return res.status(401)
-            .send('Unauthorized');
-    }
-    const sessionId = getSessionId(cookie);
-    const user = sessions[sessionId]
-    if (!user) {
-        return res.status(401)
-            .send('Unauthorized session');
+        return res.status(401).send('Unauthorized');
     }
 
-    return res.json({ name: user });
-})
+    const sessionId = getSessionId(cookie);
+    const user = sessions[sessionId];
+    if (!user) {
+        return res.status(401).send('Unauthorized session');
+    }
+
+    req.sessionUserName = user;
+    return next();
+}
+
+authRouter.get('/me', requireSession, (req, res) => {
+    return res.json({ name: req.sessionUserName });
+});
 
 authRouter.post('/logout', (req, res) => {
     const cookie = req.headers.cookie
