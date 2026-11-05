@@ -82,11 +82,12 @@ function requireSession(req, res, next) {
     }
 
     const sessionId = getSessionId(cookie);
-    const user = sessions[sessionId];
-    if (!user) {
+
+    if (!sessionId || !Object.hasOwn(sessions, sessionId)) {
         return res.status(401).send('Unauthorized session');
     }
 
+    const user = sessions[sessionId];
     req.sessionUserName = user;
     return next();
 }

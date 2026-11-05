@@ -261,6 +261,16 @@ test("Logout hoạt động khi request gửi nhiều cookie", async () => {
     assert.equal(getRes1.status, 401)
 })
 
+test('GET /me từ chối sessionId=constructor', async () => {
+    const response = await fetch(`${baseURL}/me`, {
+        headers: {
+            Cookie: 'sessionId=constructor'
+        }
+    });
+
+    assert.equal(response.status, 401);
+})
+
 after(async () => {
     try {
         // 1. Nếu server tồn tại và đang mở:
