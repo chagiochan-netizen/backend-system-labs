@@ -74,7 +74,7 @@ authRouter.post('/login', (req, res) => {
     }
 
 })
-// Đặt authRouter.get('/me', ...) ở đây.
+
 function requireSession(req, res, next) {
     const cookie = req.headers.cookie;
     if (!cookie) {
